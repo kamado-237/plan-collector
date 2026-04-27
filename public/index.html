@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌿PLANT_COLLECTOR— Collecteur de Plantes Médicinales</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <div class="logo">🌿 PLANT_COLLECTOR</div>
+    <p class="subtitle">Collecteur intelligent de données sur les plantes médicinales</p>
+  </header>
+
+  <main>
+    <div class="search-box">
+      <input type="text" id="plantInput" placeholder="Ex: Aloe vera, Gingembre, Moringa..." />
+      <button id="searchBtn" onclick="searchPlant()">🔍 Collecter</button>
+    </div>
+
+    <div class="suggestions">
+      <span>Suggestions :</span>
+      <button onclick="quickSearch('Aloe vera')">Aloe vera</button>
+      <button onclick="quickSearch('Gingembre')">Gingembre</button>
+      <button onclick="quickSearch('Moringa')">Moringa</button>
+      <button onclick="quickSearch('Curcuma')">Curcuma</button>
+      <button onclick="quickSearch('Neem')">Neem</button>
+    </div>
+
+    <div id="loader" class="loader hidden">⏳ Collecte en cours...</div>
+    <div id="error" class="error hidden"></div>
+
+    <div id="result" class="result hidden">
+      <div class="result-header">
+        <img id="plantImage" src="" alt="" />
+        <div>
+          <h2 id="plantName"></h2>
+          <span class="badge">✅ Données collectées</span>
+          <p id="collectDate"></p>
+        </div>
+      </div>
+      <p id="plantDesc"></p>
+      <div class="meta">
+        <div class="meta-item">
+          <span class="label">🧪 Formule moléculaire</span>
+          <span id="formula"></span>
+        </div>
+        <div class="meta-item">
+          <span class="label">📡 Source</span>
+          <span id="source"></span>
+        </div>
+        <div class="meta-item">
+          <span class="label">🔗 Wikipedia</span>
+          <a id="wikiLink" href="#" target="_blank">Voir l'article complet</a>
+        </div>
+      </div>
+      <div class="actions">
+        <button onclick="exportJSON()">⬇️ Exporter JSON</button>
+        <button onclick="exportCSV()">📄 Exporter CSV</button>
+        <button onclick="saveToHistory()">💾 Sauvegarder</button>
+      </div>
+    </div>
+
+    <div id="history" class="history hidden">
+      <h3>📋 Historique des collectes</h3>
+      <div id="historyList"></div>
+      <button onclick="clearHistory()">🗑️ Vider l'historique</button>
+    </div>
+
+  </main>
+
+  <footer>
+    <p>🌍 PLANT_COLLECTOR — INF232 EC2 | Données : Wikipedia FR + PubChem</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
