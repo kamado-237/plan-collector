@@ -1,2 +1,1 @@
-# plan-collector
-# plan-collector
+# Plant Collector - INF232 EC2
