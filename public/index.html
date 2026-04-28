@@ -3,76 +3,257 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🌿PLANT_COLLECTOR— Collecteur de Plantes Médicinales</title>
+  <title>PhytoScrape — Plantes Médicinales</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-  <header>
-    <div class="logo">🌿 PLANT_COLLECTOR</div>
-    <p class="subtitle">Collecteur intelligent de données sur les plantes médicinales</p>
-  </header>
-
-  <main>
-    <div class="search-box">
-      <input type="text" id="plantInput" placeholder="Ex: Aloe vera, Gingembre, Moringa..." />
-      <button id="searchBtn" onclick="searchPlant()">🔍 Collecter</button>
-    </div>
-
-    <div class="suggestions">
-      <span>Suggestions :</span>
-      <button onclick="quickSearch('Aloe vera')">Aloe vera</button>
-      <button onclick="quickSearch('Gingembre')">Gingembre</button>
-      <button onclick="quickSearch('Moringa')">Moringa</button>
-      <button onclick="quickSearch('Curcuma')">Curcuma</button>
-      <button onclick="quickSearch('Neem')">Neem</button>
-    </div>
-
-    <div id="loader" class="loader hidden">⏳ Collecte en cours...</div>
-    <div id="error" class="error hidden"></div>
-
-    <div id="result" class="result hidden">
-      <div class="result-header">
-        <img id="plantImage" src="" alt="" />
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <span class="logo-icon">🌿</span>
         <div>
-          <h2 id="plantName"></h2>
-          <span class="badge">✅ Données collectées</span>
-          <p id="collectDate"></p>
+          <div class="logo-title">PhytoScrape</div>
+          <div class="logo-sub">DATA ANALYTICS</div>
         </div>
       </div>
-      <p id="plantDesc"></p>
-      <div class="meta">
-        <div class="meta-item">
-          <span class="label">🧪 Formule moléculaire</span>
-          <span id="formula"></span>
-        </div>
-        <div class="meta-item">
-          <span class="label">📡 Source</span>
-          <span id="source"></span>
-        </div>
-        <div class="meta-item">
-          <span class="label">🔗 Wikipedia</span>
-          <a id="wikiLink" href="#" target="_blank">Voir l'article complet</a>
+      <button class="sidebar-close" onclick="toggleSidebar()">✕</button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="showPage('dashboard')">
+        <span class="nav-icon">⊞</span> Tableau de bord
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('collecte')">
+        <span class="nav-icon">🌐</span> Collecte de données
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('base')">
+        <span class="nav-icon">🌿</span> Base de données
+      </a>
+      <a href="#" class="nav-item" onclick="showPage('analyses')">
+        <span class="nav-icon">📊</span> Analyses statistiques
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-stat-label">Base de données</div>
+      <div class="sidebar-stat-value" id="sidebarTotal">0 plantes</div>
+      <div class="sidebar-progress">
+        <div class="sidebar-progress-bar" id="sidebarProgress"></div>
+      </div>
+      <div class="sidebar-stat-label" id="sidebarSources">0 sources scrapées</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="topbarTitle">Tableau de bord</div>
+    </div>
+
+    <!-- PAGE : DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-content">
+          <div class="hero-tag">PLATEFORME D'ANALYSE</div>
+          <h1>Plantes Médicinales & Web Scraping</h1>
+          <p>Collectez, explorez et analysez les propriétés thérapeutiques de plantes médicinales à travers le monde.</p>
         </div>
       </div>
-      <div class="actions">
-        <button onclick="exportJSON()">⬇️ Exporter JSON</button>
-        <button onclick="exportCSV()">📄 Exporter CSV</button>
-        <button onclick="saveToHistory()">💾 Sauvegarder</button>
+
+      <!-- STATS CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-label">PLANTES COLLECTÉES</div>
+          <div class="stat-value" id="statPlantes">0</div>
+          <div class="stat-trend">↑ 18% ce mois</div>
+          <div class="stat-icon">🌿</div>
+        </div>
+        <div class="stat-card white">
+          <div class="stat-label">FAMILLES BOTANIQUES</div>
+          <div class="stat-value" id="statFamilles">0</div>
+          <div class="stat-trend green-text">↑ 12% ce mois</div>
+          <div class="stat-icon">🗄️</div>
+        </div>
+        <div class="stat-card white">
+          <div class="stat-label">PROPRIÉTÉS UNIQUES</div>
+          <div class="stat-value" id="statProprietes">0</div>
+          <div class="stat-trend green-text">↑ 8% ce mois</div>
+          <div class="stat-icon">🧪</div>
+        </div>
+        <div class="stat-card white">
+          <div class="stat-label">RÉGIONS COUVERTES</div>
+          <div class="stat-value" id="statRegions">0</div>
+          <div class="stat-trend green-text">↑ 5% ce mois</div>
+          <div class="stat-icon">🌍</div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Distribution par famille</div>
+          <div class="chart-sub" id="chartFamillesSub">0 familles botaniques</div>
+          <canvas id="chartFamilles" height="200"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Répartition géographique</div>
+          <div class="chart-sub" id="chartRegionsSub">0 régions</div>
+          <canvas id="chartRegions" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- CHRONOLOGIE -->
+      <div class="chart-card full">
+        <div class="chart-title">Chronologie de collecte</div>
+        <div class="chart-sub">Plantes collectées par mois</div>
+        <canvas id="chartChronologie" height="100"></canvas>
+      </div>
+
+      <!-- SESSIONS + DERNIÈRES PLANTES -->
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">⚡ Sessions récentes</div>
+          <div id="sessionsList" class="sessions-list"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">Dernières plantes ajoutées</div>
+          <div id="derniersList" class="derniers-list"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAGE : COLLECTE -->
+    <div class="page" id="page-collecte">
+      <div class="page-header">
+        <h2>🌐 Collecte de données</h2>
+        <p>Recherchez et collectez des données sur les plantes médicinales</p>
+      </div>
+
+      <div class="collecte-box">
+        <input type="text" id="plantInput" placeholder="Ex: Aloe vera, Gingembre, Moringa..." />
+        <button onclick="searchPlant()">🔍 Collecter</button>
+      </div>
+
+      <div class="suggestions">
+        <span>Suggestions :</span>
+        <button onclick="quickSearch('Aloe vera')">Aloe vera</button>
+        <button onclick="quickSearch('Gingembre')">Gingembre</button>
+        <button onclick="quickSearch('Moringa')">Moringa</button>
+        <button onclick="quickSearch('Curcuma')">Curcuma</button>
+        <button onclick="quickSearch('Neem')">Neem</button>
+        <button onclick="quickSearch('Ashwagandha')">Ashwagandha</button>
+        <button onclick="quickSearch('Ginseng')">Ginseng</button>
+      </div>
+
+      <div id="loader" class="loader hidden">⏳ Collecte en cours...</div>
+      <div id="error" class="error-box hidden"></div>
+
+      <div id="result" class="result-card hidden">
+        <div class="result-header">
+          <img id="plantImage" src="" alt="" />
+          <div class="result-info">
+            <h2 id="plantName"></h2>
+            <span class="badge">✅ Données collectées</span>
+            <p id="collectDate"></p>
+          </div>
+        </div>
+        <p id="plantDesc"></p>
+        <div class="result-meta">
+          <div class="meta-item">
+            <span class="meta-label">🧪 Formule moléculaire</span>
+            <span id="formula"></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">📡 Source</span>
+            <span id="source"></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">🔗 Wikipedia</span>
+            <a id="wikiLink" href="#" target="_blank">Voir l'article complet →</a>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button onclick="exportJSON()">⬇️ Exporter JSON</button>
+          <button onclick="exportCSV()">📄 Exporter CSV</button>
+          <button onclick="saveToHistory()">💾 Sauvegarder</button>
+        </div>
       </div>
     </div>
 
-    <div id="history" class="history hidden">
-      <h3>📋 Historique des collectes</h3>
-      <div id="historyList"></div>
-      <button onclick="clearHistory()">🗑️ Vider l'historique</button>
+    <!-- PAGE : BASE DE DONNÉES -->
+    <div class="page" id="page-base">
+      <div class="page-header">
+        <h2>🌿 Base de données</h2>
+        <p>Toutes les plantes collectées</p>
+      </div>
+      <div id="baseList" class="base-list"></div>
     </div>
 
-  </main>
+    <!-- PAGE : ANALYSES -->
+    <div class="page" id="page-analyses">
+      <div class="page-header">
+        <h2>📊 Analyses statistiques</h2>
+        <p>Statistiques descriptives et visualisations des données collectées</p>
+      </div>
 
-  <footer>
-    <p>🌍 PLANT_COLLECTOR — INF232 EC2 | Données : Wikipedia FR + PubChem</p>
-  </footer>
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-label">PLANTES ANALYSÉES</div>
+          <div class="stat-value" id="statAnalyse">0</div>
+          <div class="stat-icon">🌿</div>
+        </div>
+        <div class="stat-card white">
+          <div class="stat-label">PROPRIÉTÉS MOY.</div>
+          <div class="stat-value">3.9</div>
+          <div class="stat-icon">🧪</div>
+        </div>
+        <div class="stat-card white">
+          <div class="stat-label">COMPOSÉS MOY.</div>
+          <div class="stat-value">4.0</div>
+          <div class="stat-icon">📈</div>
+        </div>
+        <div class="stat-card white">
+          <div class="stat-label">FAMILLES BOTANIQUES</div>
+          <div class="stat-value" id="statFamillesAnalyse">0</div>
+          <div class="stat-icon">🌲</div>
+        </div>
+      </div>
+
+      <div class="analyse-tabs">
+        <button class="tab active" onclick="switchTab('vue')">Vue d'ensemble</button>
+        <button class="tab" onclick="switchTab('proprietes')">Propriétés</button>
+        <button class="tab" onclick="switchTab('geo')">Géographie</button>
+      </div>
+
+      <div class="chart-card full" id="tab-vue">
+        <div class="chart-title">Distribution par famille botanique</div>
+        <div class="chart-sub" id="analysesFamillesSub">0 familles identifiées</div>
+        <canvas id="chartAnalyseFamilles" height="120"></canvas>
+      </div>
+
+      <div class="chart-card full hidden" id="tab-proprietes">
+        <div class="chart-title">Propriétés thérapeutiques</div>
+        <div class="chart-sub">Fréquence des propriétés dans la base</div>
+        <canvas id="chartProprietes" height="120"></canvas>
+      </div>
+
+      <div class="chart-card full hidden" id="tab-geo">
+        <div class="chart-title">Répartition géographique</div>
+        <div class="chart-sub">Distribution par région du monde</div>
+        <canvas id="chartGeo" height="120"></canvas>
+      </div>
+    </div>
+
+  </div>
 
   <script src="app.js"></script>
 </body>
