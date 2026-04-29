@@ -1,8 +1,9 @@
 // ─── DONNÉES LOCALES ───
 let plantesDB = JSON.parse(localStorage.getItem('plantesDB') || '[]');
 let currentData = null;
-
-const API_BASE = 'http://localhost:3000/api/scrape';
+const API_BASE = window.location.hostname === 'localhost'
+  ? 'http://localhost:3000/api/scrape'
+  : '/api/scrape';
 
 // Noms scientifiques connus
 const NOMS_SCIENTIFIQUES = {
